@@ -1,0 +1,20 @@
+﻿<h3>QueryBuilder</h3>
+
+<Head @ref=Head Fields=Fields></Head>
+
+@code {
+    [Parameter]
+    public Dictionary<string, string> Fields { get; set; } = default!;
+
+    private Head Head = default!;
+
+    public QueryBuilderBase GetData()
+    {
+        var headModel = new HeadModel()
+        {
+            Condition = Head.Condition,
+            FormModel = Head.GetData()
+        };
+        return headModel;
+    }
+}

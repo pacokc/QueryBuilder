@@ -1,0 +1,104 @@
+﻿@if (Fields != null)
+{
+    <div class="row">
+        <select class="form-control" @onchange="SelectProperty">
+            <option disabled selected value> -- select an option -- </option>
+            @foreach (var field in Fields)
+            {
+                <option value=@field.Key>@field.Key</option>
+            }
+        </select>
+        @if(!string.IsNullOrEmpty(formModel.Field) && formModel != null)
+        {
+            <select class="form-control" value="@formModel.Operator" @onchange="OperatorSet">
+                <option disabled selected value> -- select an option -- </option>
+                @foreach(var option in DefaultOperations.Operations[Fields[SelectedProperty]])
+                {
+                    <option>@option.Key</option>
+                }
+            </select>
+            @if (!string.IsNullOrEmpty(formModel.Operator))
+            {
+                @for(int i = 0; i < DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator]; i++)
+                {
+                    //needs a local copy to be used in delegate, weird but works...
+                    int j = i;
+                    <input class="form-control" type=@Constants.InputType[Fields[SelectedProperty]] value="@ValueConverter(values[i], formModel.Type)" @onchange="@((ChangeEventArgs _e) => ValueSet(_e, j))"/>
+                }
+            }
+        }
+       
+    </div>
+}
+
+@code {
+    [Parameter]
+    public Dictionary<string, string> Fields { get; set; } = default!;
+
+    private string SelectedProperty = "";
+    private FormModel formModel = new();
+    private dynamic[] values = default!;
+
+    public void SelectProperty(ChangeEventArgs e)
+    {
+        if (Fields[e.Value!.ToString()!] == null)
+        {
+            return;
+        }
+
+        SelectedProperty = e.Value.ToString()!;
+        formModel.Operator = null!;
+        formModel.Field = SelectedProperty;
+        formModel.Id = SelectedProperty;
+        formModel.Input = "select";
+        formModel.Type = Fields[SelectedProperty];
+    }
+
+    public void OperatorSet(ChangeEventArgs e)
+    {
+        formModel.Operator = e.Value!.ToString()!;
+        values = new dynamic[DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator]];
+    }
+
+    public void ValueSet(ChangeEventArgs e, int valueFieldNumber)
+    {
+        values[valueFieldNumber] = ValueConverter(e.Value!, formModel.Type);
+
+        if(DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator] == 1)
+        {
+            formModel.Value = ValueConverter(e.Value!, formModel.Type);
+            return;
+        }
+
+        formModel.Value = values;
+    }
+
+    dynamic ValueConverter(dynamic value, string type)
+    {
+        if(value == null)
+        {
+            return Constants.TypeDefaultValue[type];
+        }
+
+        switch (type)
+        {
+            case "string":
+                return value.ToString();
+            case "int":
+                return int.Parse(value.ToString());
+            case "datetime":
+                return DateTime.Parse(value.ToString());
+            case "boolean":
+                return Boolean.Parse(value.ToString());
+            case "float":
+                return float.Parse(value.ToString());
+            default:
+                return value;
+        }
+    }
+
+    public FormModel GetData()
+    {
+        return formModel;
+    }
+}

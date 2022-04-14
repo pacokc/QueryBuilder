@@ -1,0 +1,96 @@
+﻿@using QueryBuilderDemo.Classes
+@using System.Linq
+
+<div class="rule-group border">
+    <div class="rule-header">
+        <div class="btn-group rule-left" role="group">
+            <button @onclick=@(() => SetCondition("AND")) class="btn btn-primary">AND</button>
+            <button @onclick=@(() => SetCondition("OR")) class="btn btn-primary">OR</button>
+        </div>
+        <div class="rule-right" role="group">
+            <button @onclick="AddGroup" class="btn btn-secondary">Add group</button>
+            <button @onclick="AddRule" class="btn btn-secondary">Add rule</button>
+            @if (Delete.HasDelegate)
+            {
+                <button @onclick="@(_ => Delete.InvokeAsync(Id))" class="btn btn-danger">Delete</button>
+            }
+        </div>
+    </div>
+
+    <div class="list-group">
+        @if (Rules != null)
+        {
+            @foreach(var rule in Rules)
+            {
+                if (rule is RuleComponentHeader)
+                {
+                    <Head Fields=Fields Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Head>
+                }
+                if (rule is RuleComponentBody)
+                {
+                    <Body Fields=Fields Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Body>
+                }
+            }
+        }
+
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Dictionary<string, string> Fields { get; set; } = default!;
+    [Parameter]
+    public List<RuleComponentBase> Rules { get; set; } = new();
+    [Parameter]
+    public string Id { get; set; } = default!;
+    [Parameter]
+    public EventCallback<string> Delete { get; set; }
+
+    public string Condition = "AND";
+
+    private Dictionary<string, IComponent> References = new();
+
+    public void SetCondition(string condition){
+        this.Condition = condition;
+    }
+
+    public void AddGroup()
+    {
+        Rules.Add(new RuleComponentHeader() { Id = Guid.NewGuid().ToString() });
+    }
+
+    public void AddRule()
+    {
+        Rules.Add(new RuleComponentBody() { Id = Guid.NewGuid().ToString() });
+    }
+
+    public void DeleteRule(string id)
+    {
+        Rules.Remove(Rules.First(x => x.Id == id));
+    }
+
+    public List<QueryBuilderBase> GetData()
+    {
+        var list = new List<QueryBuilderBase>();
+        foreach(var reference in References)
+        {
+            if(reference.Value is Head)
+            {
+                var header = reference.Value as Head;
+                var head = new HeadModel()
+                {
+                    Condition = Condition,
+                    FormModel = header!.GetData()
+                };
+                list.Add(head);
+            }
+            if(reference.Value is Body)
+            {
+                var body = reference.Value as Body;
+                list.Add(body!.GetData());
+            }
+        }
+        return list;
+    }
+
+}

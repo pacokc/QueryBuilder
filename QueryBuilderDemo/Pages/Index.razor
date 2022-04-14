@@ -1,0 +1,17 @@
+﻿@page "/"
+@using QueryBuilder;
+@using Newtonsoft.Json;
+
+<QueryBuilderDemo.Pages.QueryBuilder.QueryBuilder @ref=QueryBuilder Fields=Fields></QueryBuilderDemo.Pages.QueryBuilder.QueryBuilder>
+<button @onclick="GetData">Get</button>
+
+@code{
+    public QueryBuilderDemo.Pages.QueryBuilder.QueryBuilder QueryBuilder = default!;
+    public Dictionary<string, string> Fields = new Dictionary<string, string>() { { "Name", "string" }, { "Rajcica", "string" }, { "Created", "datetime" }, { "PoljeHektara", "int" }, { "Koeficijent", "float" } };
+
+    public void GetData()
+    {
+        var data = QueryBuilder.GetData();
+        Console.WriteLine(JsonConvert.SerializeObject(data));
+    }
+}
