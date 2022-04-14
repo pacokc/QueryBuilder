@@ -12,14 +12,14 @@
         {
             <select class="form-control" value="@formModel.Operator" @onchange="OperatorSet">
                 <option disabled selected value> -- select an option -- </option>
-                @foreach(var option in DefaultOperations.Operations[Fields[SelectedProperty]])
+                @foreach(var option in Operations[Fields[SelectedProperty]])
                 {
                     <option>@option.Key</option>
                 }
             </select>
             @if (!string.IsNullOrEmpty(formModel.Operator))
             {
-                @for(int i = 0; i < DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator]; i++)
+                @for(int i = 0; i < Operations[Fields[SelectedProperty]][formModel.Operator]; i++)
                 {
                     //needs a local copy to be used in delegate, weird but works...
                     int j = i;
@@ -34,6 +34,8 @@
 @code {
     [Parameter]
     public Dictionary<string, string> Fields { get; set; } = default!;
+    [Parameter]
+    public Dictionary<string, Dictionary<string, int>> Operations { get; set; } = default!;
 
     private string SelectedProperty = "";
     private FormModel formModel = new();
@@ -58,14 +60,14 @@
     {
         formModel.Operator = e.Value!.ToString()!;
         formModel.Value = Constants.TypeDefaultValue[Fields[SelectedProperty]];
-        values = new dynamic[DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator]];
+        values = new dynamic[Operations[Fields[SelectedProperty]][formModel.Operator]];
     }
 
     public void ValueSet(ChangeEventArgs e, int valueFieldNumber)
     {
         values[valueFieldNumber] = ValueConverter(e.Value!, formModel.Type);
 
-        if(DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator] == 1)
+        if(Operations[Fields[SelectedProperty]][formModel.Operator] == 1)
         {
             formModel.Value = ValueConverter(e.Value!, formModel.Type);
             return;

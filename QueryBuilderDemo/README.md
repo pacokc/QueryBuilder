@@ -1,4 +1,4 @@
 # TODO
 
-- [ ] Expose Operations
+- [x] Expose Operations
 - [ ] CSS

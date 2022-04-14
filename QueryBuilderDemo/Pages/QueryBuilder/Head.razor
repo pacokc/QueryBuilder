@@ -24,11 +24,11 @@
             {
                 if (rule is RuleComponentHeader)
                 {
-                    <Head Fields=Fields Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Head>
+                    <Head Fields=Fields Operations=Operations Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Head>
                 }
                 if (rule is RuleComponentBody)
                 {
-                    <Body Fields=Fields Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Body>
+                    <Body Fields=Fields Operations=Operations Id=@rule.Id Delete="DeleteRule" @ref="References[rule.Id]"></Body>
                 }
             }
         }
@@ -39,6 +39,8 @@
 @code {
     [Parameter]
     public Dictionary<string, string> Fields { get; set; } = default!;
+    [Parameter]
+    public Dictionary<string, Dictionary<string, int>> Operations { get; set; } = default!;
     [Parameter]
     public List<RuleComponentBase> Rules { get; set; } = new();
     [Parameter]
