@@ -4,8 +4,8 @@
 <div class="rule-group border">
     <div class="rule-header">
         <div class="btn-group rule-left" role="group">
-            <button @onclick=@(() => SetCondition("AND")) class="btn btn-primary">AND</button>
-            <button @onclick=@(() => SetCondition("OR")) class="btn btn-primary">OR</button>
+            <button @onclick=@(() => SetCondition("AND")) class="btn btn-primary @(Condition == "AND" ? "selected" : "")">AND</button>
+            <button @onclick=@(() => SetCondition("OR")) class="btn btn-primary @(Condition == "OR" ? "selected" : "")">OR</button>
         </div>
         <div class="rule-right" role="group">
             <button @onclick="AddGroup" class="btn btn-secondary">Add group</button>
