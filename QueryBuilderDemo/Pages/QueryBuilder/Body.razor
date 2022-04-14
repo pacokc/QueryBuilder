@@ -1,6 +1,6 @@
 ﻿<div class="rule-body">
     <div class="rule-left">
-       <BodyForm @ref=BodyForm Fields=Fields></BodyForm>
+       <BodyForm Operations=Operations @ref=BodyForm Fields=Fields></BodyForm>
     </div>
    <div class="rule-right">
        <button @onclick="@(_ => Delete.InvokeAsync(Id))" class="btn btn-danger">Delete</button>
@@ -10,6 +10,8 @@
 @code {
     [Parameter]
     public Dictionary<string, string> Fields { get; set; } = default!;
+    [Parameter]
+    public Dictionary<string, Dictionary<string, int>> Operations { get; set; } = default!;
     [Parameter]
     public string Id { get; set; } = default!;
     [Parameter]
