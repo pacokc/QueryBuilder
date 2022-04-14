@@ -57,6 +57,7 @@
     public void OperatorSet(ChangeEventArgs e)
     {
         formModel.Operator = e.Value!.ToString()!;
+        formModel.Value = Constants.TypeDefaultValue[Fields[SelectedProperty]];
         values = new dynamic[DefaultOperations.Operations[Fields[SelectedProperty]][formModel.Operator]];
     }
 
